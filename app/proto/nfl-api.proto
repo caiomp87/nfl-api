@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package nflApi;
+
+option go_package = "app/pb";
+
+service nflApiService {
+  rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse) {};
+}
+
+message Team {
+  string id = 1;
+  string name = 2;
+  string conference = 3;
+  string divisional = 4;
+  string stadium = 5;
+  string state = 6;
+  int64 titles = 7;
+  int64 superBowlAppearance = 8;
+}
+
+message CreateTeamRequest {
+  Team team = 1;
+}
+message CreateTeamResponse {
+  bool success = 1;
+}
