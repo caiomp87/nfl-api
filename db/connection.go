@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func connect() (*mongo.Collection, context.Context, error) {
+func Connect() (*mongo.Collection, context.Context, error) {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		return nil, nil, err
