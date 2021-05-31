@@ -6,6 +6,7 @@ option go_package = "app/pb";
 
 service nflApiService {
   rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse) {};
+  rpc GetTeamById(GetTeamByIdRequest) returns (Team) {};
 }
 
 message Team {
@@ -20,8 +21,18 @@ message Team {
 }
 
 message CreateTeamRequest {
-  Team team = 1;
+  string name = 1;
+  string conference = 2;
+  string divisional = 3;
+  string stadium = 4;
+  string state = 5;
+  int64 titles = 6;
+  int64 superBowlAppearance = 7;
 }
 message CreateTeamResponse {
   bool success = 1;
+}
+
+message GetTeamByIdRequest {
+  string id = 1;
 }
