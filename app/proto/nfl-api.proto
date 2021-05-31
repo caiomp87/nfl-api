@@ -8,6 +8,7 @@ service nflApiService {
   rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse) {};
   rpc GetTeamById(GetTeamByIdRequest) returns (Team) {};
   rpc GetTeams(Empty) returns (stream Team) {};
+  rpc UpdateTeam(UpdateTeamRequest) returns (Team) {};
 }
 
 message Empty {}
@@ -38,4 +39,9 @@ message CreateTeamResponse {
 
 message GetTeamByIdRequest {
   string id = 1;
+}
+
+message UpdateTeamRequest {
+  string id = 1;
+  CreateTeamRequest team = 2;
 }
