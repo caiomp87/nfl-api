@@ -41,3 +41,27 @@ func (nfl NflApiServiceServer) CreateTeam(ctx context.Context, req *pb.CreateTea
 		Success: true,
 	}, nil
 }
+
+func (nfl NflApiServiceServer) GetTeamById(ctx context.Context, req *pb.GetTeamByIdRequest) (*pb.Team, error) {
+	objectId, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Cannot convert string id to objectID: %s", err.Error()))
+	}
+
+	result := nfl.Db.FindOne(ctx, primitive.M{"_id": objectId})
+	var data models.Team
+	err = result.Decode(&data)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, err.Error())
+	}
+
+	return &pb.Team{
+		Name:                data.Name,
+		Conference:          data.Conference,
+		Divisional:          data.Divisional,
+		Stadium:             data.Stadium,
+		State:               data.State,
+		Titles:              data.Titles,
+		SuperBowlAppearance: data.SuperBowlAppearance,
+	}, nil
+}
