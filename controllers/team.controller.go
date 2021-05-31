@@ -65,3 +65,33 @@ func (nfl NflApiServiceServer) GetTeamById(ctx context.Context, req *pb.GetTeamB
 		SuperBowlAppearance: data.SuperBowlAppearance,
 	}, nil
 }
+
+func (nfl NflApiServiceServer) GetTeams(req *pb.Empty, stream pb.NflApiService_GetTeamsServer) error {
+	cursor, err := nfl.Db.Find(nfl.Ctx, primitive.M{})
+	if err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("Unknown internal error: %s", err.Error()))
+	}
+
+	defer cursor.Close(nfl.Ctx)
+
+	var data models.Team
+
+	for cursor.Next(nfl.Ctx) {
+		err = cursor.Decode(&data)
+		if err != nil {
+			return status.Errorf(codes.Unavailable, fmt.Sprintf("Could not decode data: %s", err.Error()))
+		}
+
+		stream.Send(&pb.Team{
+			Name:                data.Name,
+			Conference:          data.Conference,
+			Divisional:          data.Divisional,
+			Stadium:             data.Stadium,
+			State:               data.State,
+			Titles:              data.Titles,
+			SuperBowlAppearance: data.SuperBowlAppearance,
+		})
+	}
+
+	return nil
+}

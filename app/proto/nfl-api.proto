@@ -7,7 +7,10 @@ option go_package = "app/pb";
 service nflApiService {
   rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse) {};
   rpc GetTeamById(GetTeamByIdRequest) returns (Team) {};
+  rpc GetTeams(Empty) returns (stream Team) {};
 }
+
+message Empty {}
 
 message Team {
   string id = 1;
