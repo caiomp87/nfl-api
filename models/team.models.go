@@ -3,7 +3,7 @@ package models
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Team struct {
-	Id                  primitive.ObjectID `bson:"id,omitempty" json:"id,omitempty"`
+	Id                  primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Name                string             `bson:"name,omitempty" json:"name,omitempty"`
 	Conference          string             `bson:"conference,omitempty" json:"conference,omitempty"`
 	Divisional          string             `bson:"divisional,omitempty" json:"divisional,omitempty"`
