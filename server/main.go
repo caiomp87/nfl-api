@@ -9,20 +9,26 @@ import (
 	"os/signal"
 
 	"api/app/pb"
+	"api/controllers"
+	"api/db"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-type NflApiServiceServer struct {
-	pb.UnimplementedNflApiServiceServer
-	Db  *mongo.Collection
-	Ctx context.Context
-}
+var (
+	mongoDb  *mongo.Collection
+	mongoCtx context.Context
+	err      error
+)
 
 func init() {
-
+	mongoDb, mongoCtx, err = db.Connect()
+	if err != nil {
+		log.Fatalf("Could not connect to mongoDb: %s", err.Error())
+	}
+	fmt.Println("Connected to mongodb!")
 }
 
 func main() {
@@ -34,7 +40,12 @@ func main() {
 	grpcServer := grpc.NewServer()
 	reflection.Register(grpcServer)
 
-	pb.RegisterNflApiServiceServer(grpcServer, &NflApiServiceServer{})
+	nflApi := controllers.NflApiServiceServer{
+		Db:  mongoDb,
+		Ctx: mongoCtx,
+	}
+
+	pb.RegisterNflApiServiceServer(grpcServer, &nflApi)
 
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
