@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -28,6 +29,8 @@ func (nfl NflApiServiceServer) CreateTeam(ctx context.Context, req *pb.CreateTea
 		State:               strings.Title(req.GetState()),
 		Titles:              req.GetTitles(),
 		SuperBowlAppearance: req.GetSuperBowlAppearance(),
+		CreatedAt:           time.Now(),
+		UpdatedAt:           time.Now(),
 	}
 
 	result, err := nfl.Db.InsertOne(ctx, data)

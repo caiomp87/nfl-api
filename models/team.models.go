@@ -1,6 +1,10 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Team struct {
 	Id                  primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
@@ -11,4 +15,6 @@ type Team struct {
 	State               string             `bson:"state,omitempty" json:"state,omitempty"`
 	Titles              int64              `bson:"titles,omitempty" json:"titles,omitempty"`
 	SuperBowlAppearance int64              `bson:"superBowlAppearance,omitempty" json:"superBowlAppearance,omitempty"`
+	CreatedAt           time.Time          `bson:"createdAt,omitempty" json:"createdAt,omitempty"`
+	UpdatedAt           time.Time          `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
 }
