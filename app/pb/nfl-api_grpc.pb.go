@@ -22,6 +22,7 @@ type NflApiServiceClient interface {
 	GetTeamById(ctx context.Context, in *GetTeamByIdRequest, opts ...grpc.CallOption) (*Team, error)
 	GetTeams(ctx context.Context, in *Empty, opts ...grpc.CallOption) (NflApiService_GetTeamsClient, error)
 	UpdateTeam(ctx context.Context, in *UpdateTeamRequest, opts ...grpc.CallOption) (*Team, error)
+	DeleteTeam(ctx context.Context, in *DeleteTeamRequest, opts ...grpc.CallOption) (*CreateTeamResponse, error)
 }
 
 type nflApiServiceClient struct {
@@ -91,6 +92,15 @@ func (c *nflApiServiceClient) UpdateTeam(ctx context.Context, in *UpdateTeamRequ
 	return out, nil
 }
 
+func (c *nflApiServiceClient) DeleteTeam(ctx context.Context, in *DeleteTeamRequest, opts ...grpc.CallOption) (*CreateTeamResponse, error) {
+	out := new(CreateTeamResponse)
+	err := c.cc.Invoke(ctx, "/nflApi.nflApiService/DeleteTeam", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NflApiServiceServer is the server API for NflApiService service.
 // All implementations must embed UnimplementedNflApiServiceServer
 // for forward compatibility
@@ -99,6 +109,7 @@ type NflApiServiceServer interface {
 	GetTeamById(context.Context, *GetTeamByIdRequest) (*Team, error)
 	GetTeams(*Empty, NflApiService_GetTeamsServer) error
 	UpdateTeam(context.Context, *UpdateTeamRequest) (*Team, error)
+	DeleteTeam(context.Context, *DeleteTeamRequest) (*CreateTeamResponse, error)
 	mustEmbedUnimplementedNflApiServiceServer()
 }
 
@@ -117,6 +128,9 @@ func (UnimplementedNflApiServiceServer) GetTeams(*Empty, NflApiService_GetTeamsS
 }
 func (UnimplementedNflApiServiceServer) UpdateTeam(context.Context, *UpdateTeamRequest) (*Team, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTeam not implemented")
+}
+func (UnimplementedNflApiServiceServer) DeleteTeam(context.Context, *DeleteTeamRequest) (*CreateTeamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTeam not implemented")
 }
 func (UnimplementedNflApiServiceServer) mustEmbedUnimplementedNflApiServiceServer() {}
 
@@ -206,6 +220,24 @@ func _NflApiService_UpdateTeam_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NflApiService_DeleteTeam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTeamRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NflApiServiceServer).DeleteTeam(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/nflApi.nflApiService/DeleteTeam",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NflApiServiceServer).DeleteTeam(ctx, req.(*DeleteTeamRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NflApiService_ServiceDesc is the grpc.ServiceDesc for NflApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -224,6 +256,10 @@ var NflApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateTeam",
 			Handler:    _NflApiService_UpdateTeam_Handler,
+		},
+		{
+			MethodName: "DeleteTeam",
+			Handler:    _NflApiService_DeleteTeam_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -135,3 +135,19 @@ func (nfl NflApiServiceServer) UpdateTeam(ctx context.Context, req *pb.UpdateTea
 		SuperBowlAppearance: data.SuperBowlAppearance,
 	}, nil
 }
+
+func (nfl NflApiServiceServer) DeleteTeam(ctx context.Context, req *pb.DeleteTeamRequest) (*pb.CreateTeamResponse, error) {
+	objectId, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Cannot convert string id to objectID: %s", err.Error()))
+	}
+
+	_, err = nfl.Db.DeleteOne(ctx, primitive.M{"_id": objectId})
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Could not find/delete team with id %s: %s", req.GetId(), err.Error()))
+	}
+
+	return &pb.CreateTeamResponse{
+		Success: true,
+	}, nil
+}
