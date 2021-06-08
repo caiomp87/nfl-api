@@ -9,6 +9,7 @@ import (
 	"os/signal"
 
 	"api/app/pb"
+	"api/config"
 	"api/controllers"
 	"api/db"
 
@@ -24,17 +25,23 @@ var (
 )
 
 func init() {
+	err = config.LoadEnv()
+	if err != nil {
+		log.Fatalf("Could not load env files: %s", err.Error())
+	}
+
 	mongoDb, mongoCtx, err = db.Connect()
 	if err != nil {
 		log.Fatalf("Could not connect to mongoDb: %s", err.Error())
 	}
-	fmt.Println("Connected to mongodb!")
+	fmt.Printf("Connected to mongodb: %s\n", db.ConnectionString)
 }
 
 func main() {
-	listener, err := net.Listen("tcp", ":50051")
+	apiPort := os.Getenv("API-PORT")
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", apiPort))
 	if err != nil {
-		log.Fatal("Could not connect on port :50051", err.Error())
+		log.Fatalf("Could not connect on port :%s\n", apiPort)
 	}
 
 	grpcServer := grpc.NewServer()
@@ -53,7 +60,7 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Server succesfully started on port :50051")
+	fmt.Printf("Server succesfully started on port :%s\n", apiPort)
 
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
